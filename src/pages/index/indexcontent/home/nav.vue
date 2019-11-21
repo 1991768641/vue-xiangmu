@@ -1,7 +1,6 @@
 <template>
     <div class="nav-span" v-if="navlist.length>0"> 
-
-      <van-tabs class="homevan" v-model="active" line-width="15%">
+      <van-tabs class="homevan" line-width="15%" v-model="active">
          <div class="homeinputbox">
             <div class="homeinput">
               <div class="home_interior">
@@ -10,27 +9,23 @@
               </div>
             </div>
           </div>
-        <van-tab v-for="(list,index) in navlist" :key="list.tid" :title="list.tname+index">
-          <div class="tab-title" slot="title" @click="handleclick(index)">{{ list.tname }}</div>
-          
+        <van-tab v-for="(list,index) in navlist" :key="list.tid" :title="list.tname+index" :class="`van_tab__pane_nav${index}`">
+          <div class="tab-title" slot="title" :name="index"  :id="list.tid" @click="handleclick(index,$event)">{{ list.tname }}</div>
           <div class="tab-content">
-            <router-view></router-view>
+            <router-view :routerid="titleid" :routerindex="titleindex" :navindex="index"></router-view>
           </div>
         </van-tab>
       </van-tabs>
-      
     </div>
     <div class="home_loadding" v-else>
-      <van-loading type="spinner" vertical size="50px">亲再等一会哦~~</van-loading>
+      <van-loading type="spinner" vertical size="50px">加载中,亲耐心点哦~~</van-loading>
     </div>
 </template>
 
 <script>
 import {get} from 'utils/http';
 import Vue from 'vue';
-import { Tab, Tabs ,Field,Icon,Loading  } from 'vant';
-
-
+import { Tab, Tabs ,Field,Icon,Loading } from 'vant';
 Vue.use(Tab).use(Tabs).use(Field).use(Loading);
 
 export default {
@@ -38,13 +33,17 @@ export default {
     return {
       active:0,
       homeindex:'1',
-      navlist:[]
+      navlist:[],
+      titleid:'',
+      titleindex:'',
+      num:''
     }
   },
   components:{
     
   },
   async mounted() {
+    // this.active=store.get('active');
     let result= await get({
       url:'/api/goods/classify'
     })
@@ -57,16 +56,27 @@ export default {
     this.navlist.unshift(hot);
   },
   methods: {
-    handleclick(index){
-     this.$router.push('/index/home/home'+index.toString());
+    handleclick(index,e){
+     this.titleid=e.currentTarget.id;
+     this.titleindex=index.toString()||'1';
+     this.$router.push('/index/home/home0');
+    //  store.set('active',index);
     }
-  },
+  }
 }
 
 </script>
 <style lang='stylus' scoped>
 @import '~assets/stylus/border.styl';
 
+.tab-title
+  filter contrast(9.74)
+
+
+.homeinputbox
+  background #fff
+  position relative
+  z-index 999
 
 .home_loadding
   width 100%
@@ -82,7 +92,6 @@ export default {
 
 .tab-content
   width 100%
-  
   display flex 
   flex-direction column
 .homeinputbox

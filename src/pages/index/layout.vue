@@ -2,8 +2,8 @@
   <div class="index-wrap">
     <main>
       <transition
-        enter-active-class="animated slideInLeft"
-        leave-active-class="animated slideOutLeft"
+        :enter-active-class="`animated ${this.activeto}`"
+        :leave-active-class="`animated ${this.activeout}`"
       >
         <router-view></router-view>
       </transition>
@@ -70,6 +70,8 @@ import vipcard_light from 'assets/images/vipcard_light.png'
 export default {
   data() {
     return {
+      activeto:'',
+      activeout:'',
       active: 0,
       icon: 
       {
@@ -86,6 +88,17 @@ export default {
       }
 
     };
+  },
+  watch:{
+    $route(to,form){
+      if(form.meta.index-to.meta.index>0){
+        this.activeto='slideInLeft';
+        this.activeout='slideOutRight';
+      }else{
+        this.activeto='slideInRight';
+        this.activeout='slideOutLeft';
+      }
+    }
   }
 };
 </script>
@@ -104,7 +117,8 @@ main
 
   main 
     flex: 1;
-    overflow-y hidden
+    height 100%
+    overflow hidden
     background #fff
   nav 
     width 100%

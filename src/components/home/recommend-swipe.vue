@@ -12,15 +12,12 @@
       </div>
     </div>
   </div>
-
- 
 </template>
 
 <script>
 import Vue from 'vue';
-import BScroll from 'better-scroll';
-import {get,get1} from 'utils/http';
 
+import {get,get1} from 'utils/http';
 
 export default {
   props: ["ids"],
@@ -46,15 +43,11 @@ export default {
 </script>
 <style lang='stylus' scoped>
 
-.swiper-slide {  
-    overflow: auto;  
-    -webkit-overflow-scrolling: touch;   
-}  
-
 .recommendlist
     width 100%
     .recommend-lump
         width 100%
+        overflow hidden
         min-height 2.5879rem
         position relative
         .view-more
@@ -67,12 +60,11 @@ export default {
         img 
             vertical-align middle
         .recomswipe
-            width 100%
             height 66%
-            overflow-x scroll
             position absolute
             top .8rem
             display flex
+            overflow-x auto
             .recomitem
                 width 1.1344rem 
                 height 100%

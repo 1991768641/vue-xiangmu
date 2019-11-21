@@ -375,6 +375,8 @@ a {
 }
 
 .homevan .van-tabs__wrap{
+  position: relative;
+  z-index: 999;
   height: 38.4px !important;
 }
 .homevan .van-tab{
@@ -406,7 +408,7 @@ a {
 
 .homevan .van-tab__pane{
   height: 100%;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 
 .notice-flx .van-swipe-item{

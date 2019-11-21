@@ -8,23 +8,29 @@ import home from 'pages/index/indexcontent/home/home.vue'
 import vipcard from 'pages/index/vipcard'
 import cart from 'pages/index/cart'
 import my from 'pages/index/my'
-import home0 from 'pages/index/indexcontent/hot.vue';
-import home1 from 'pages/index/indexcontent/fruits.vue';
-import home2 from 'pages/index/indexcontent/vegetables.vue';
+import home0 from 'pages/index/indexcontent/home/other.vue';
+
+import details from 'pages/details/details.vue';
+import test from 'pages/details/test.vue';
 
 
 Vue.use(VueRouter)
 
+const routerPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
+
 const routes = [
   {
     path:'/',
-    redirect: '/index/home'
+    redirect: '/index/home/home0'
   },
   {
     path:'/index',
     name:'index',
     component:Index,
-    redirect:'/index/home',
+    redirect:'/index/home/home0',
     children:[
       {
         path:'home',
@@ -36,49 +42,67 @@ const routes = [
             path:'home0',
             name:'home0',
             component:home0
-          },
-          {
-            path:'home1',
-            name:'home1',
-            component:home1
-          },
-          {
-            path:'home2',
-            name:'home2',
-            component:home2
-          },
-          
-          
+          }
+         
         ]
       },
       {
         path:'classify',
         name:'classify',
-        component:Classify
+        component:Classify,
+        meta:{
+          index:2
+        }
       },
       {
         path:'vipcard',
         name:'vipcard',
-        component:vipcard
+        component:vipcard,
+        meta:{
+          index:3
+        }
       },
       {
         path:'cart',
         name:'cart',
-        component:cart
+        component:cart,
+        meta:{
+          index:4
+        }
       },
       {
         path:'my',
         name:'my',
-        component:my
+        component:my,
+        meta:{
+          index:5
+        }
       }
     ]
+  },
+  {
+    path:'/details',
+    name:'details',
+    component:details
+  },
+  {
+    path:'/test',
+    name:'test',
+    component:test
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return {
+      x:0,
+      y:~~to.query.scrolly
+    }
+  }
 })
+
 
 export default router

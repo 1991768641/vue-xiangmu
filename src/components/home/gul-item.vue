@@ -1,10 +1,10 @@
 <template>
  <div class="gul-list">
-  <div class="gul-item" v-for="li in gullist" :key="li">
-    <img src="http://oss.egu365.com/upload/9adb8fbf8c43433e8538303a3a5b9443.jpg"/>
-    <div data-v-e4a3ddbc class="goods-name ellipsis">傻老大原味瓜子216g*6礼盒装</div>
+  <div class="gul-item" v-for="list in gullist" :key="list.id">
+    <img :src="list.bigImg"/>
+    <div data-v-e4a3ddbc class="goods-name ellipsis">{{list.goodsName}}</div>
     <div data-v-e4a3ddbc class="price-cart flx">
-      <i data-v-e4a3ddbc class="goods-price flx-1">￥168.00</i>
+      <i data-v-e4a3ddbc class="goods-price flx-1">￥{{list.salePrice}}</i>
         <div class="rem-add">
             <van-icon name="shopping-cart-o" />
         </div>
@@ -15,23 +15,44 @@
 
 <script>
 import Vue from 'vue';
-import {get} from 'utils/http.js'
+import BScroll from 'better-scroll';
+import {get,get1} from 'utils/http.js';
 
 export default {
   data() {
     return {
-        gullist:[]
+        gullist:[],
+        num:1
     };
   },
-  mounted() {
+  async mounted() {
       this.gulitem()
+
+      let bscroll=new BScroll('.van_tab__pane_nav0',{
+          pullUpLoad: true,
+          probeType :2
+      })
+
+      bscroll.on('pullingUp',async ()=>{
+          this.num++;
+          let result=await get({
+              url:`/api/goods/list?sorts=hits+asc&pageNo=${this.num}`,
+          })
+          this.gullist=[
+              ...this.gullist,
+              ...result.list
+          ]
+          await this.$nextTick();
+          bscroll.refresh();
+          bscroll.finishPullUp();
+      })
   },
   methods: {
     async gulitem(){
         let result=await get({
             url:'/api/goods/list?sorts=hits+asc&pageNo=1'
         })
-        console.log(result);
+        this.gullist=result.list;
     }
   },
 

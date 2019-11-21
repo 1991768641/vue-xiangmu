@@ -7,10 +7,6 @@
 <script>
 import homenav from './nav.vue'
 export default {
-  data () {
-    return {
-    }
-  },
   components:{
     homenav
   }

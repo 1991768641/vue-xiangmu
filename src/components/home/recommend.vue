@@ -1,10 +1,9 @@
 <template>
-  <div class="recommendlist">
-
-    <div class="recommend-lump" v-for="(list,index) in imglist" :key="index">
+  <div class="recommendlist"  ref="lumps">
+    <div :class="`recommend-lump lump${index}`" v-for="(list,index) in imglist" :key="index">
+      <recommendswipe :ids="list.id"></recommendswipe>
       <div class="view-more">查看更多 》</div>
       <img :src="list.bgImg1"/>
-      <recommendswipe :ids="list.id"></recommendswipe>
       
     </div>
   </div>
@@ -14,7 +13,7 @@
 import {get,get1} from 'utils/http';
 import Vue from 'vue';
 import recommendswipe from 'components/home/recommend-swipe.vue';
-
+import BScroll from 'better-scroll';
 import { Swipe, SwipeItem ,Lazyload,Icon } from 'vant';
 Vue.use(Swipe).use(SwipeItem).use(Lazyload).use(Icon);
 
@@ -29,9 +28,16 @@ export default {
   components:{
     recommendswipe
   },
-  mounted() {
-      this.remimg()
-    //this.remswipe()
+  async mounted() {
+    await this.remimg()
+    // console.log(this.imglist);
+    for(var i=0;i<9;i++){
+      new BScroll('.lump'+i,{
+          pullUpLoad: true,
+          scrollX:true,
+          probeType :2
+      })
+    }
   },
   methods: {
       async remimg(){
@@ -42,13 +48,7 @@ export default {
               this.idlist.push(result.list[i].id)
           }
           this.imglist=result.list;
-          
-      }/* ,
-      async remswipe(){
-          let result1=await get({
-              
-          })
-      } */
+      }
   },
 
 };
