@@ -1,13 +1,11 @@
 <template>
-    <router-view></router-view>
+ <div>404</div>
 </template>
 
 <script>
-import store from 'store';
 export default {
   data () {
     return {
-      
     }
   }
 }

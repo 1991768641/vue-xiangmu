@@ -25,6 +25,7 @@
 <script>
 import {get} from 'utils/http';
 import Vue from 'vue';
+import store from 'store';
 import { Tab, Tabs ,Field,Icon,Loading } from 'vant';
 Vue.use(Tab).use(Tabs).use(Field).use(Loading);
 
@@ -43,7 +44,7 @@ export default {
     
   },
   async mounted() {
-    // this.active=store.get('active');
+    this.active=~~store.get('active')||0;
     let result= await get({
       url:'/api/goods/classify'
     })
@@ -60,7 +61,8 @@ export default {
      this.titleid=e.currentTarget.id;
      this.titleindex=index.toString()||'1';
      this.$router.push('/index/home/home0');
-    //  store.set('active',index);
+     store.set('active',index.toString());
+     store.set('publicid',this.titleid);
     }
   }
 }

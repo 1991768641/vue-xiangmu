@@ -15,6 +15,5 @@ module.exports = {
         .set('assets', path.resolve(__dirname, './src/assets'))
         .set('pages', path.resolve(__dirname, './src/pages'))
         .set('utils', path.resolve(__dirname, './src/utils'))
-
     }
 }

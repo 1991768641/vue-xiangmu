@@ -12,6 +12,7 @@ import home0 from 'pages/index/indexcontent/home/other.vue';
 
 import details from 'pages/details/details.vue';
 import test from 'pages/details/test.vue';
+import errors from 'pages/404/404.vue'
 
 
 Vue.use(VueRouter)
@@ -89,19 +90,18 @@ const routes = [
     path:'/test',
     name:'test',
     component:test
+  },
+  {
+    path:'*',
+    name:'404',
+    component:errors
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes,
-  scrollBehavior(to, from, savedPosition) {
-    return {
-      x:0,
-      y:~~to.query.scrolly
-    }
-  }
+  routes
 })
 
 
