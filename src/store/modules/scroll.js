@@ -9,7 +9,6 @@ const mutations={
     setpage(state,action){
         state.page=action.page
     }
-
 }
 const actions={
 

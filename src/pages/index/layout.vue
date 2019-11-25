@@ -31,7 +31,7 @@
           <img slot="icon" slot-scope="props" :src="props.active?icon.vipcard_light:icon.vipcard" />
         </van-tabbar-item>
          <van-tabbar-item
-          to="/index/cart" 
+          to="/cart" 
         >
           <span>购物车</span>
           <img slot="icon" slot-scope="props" :src="props.active?icon.cart_light:icon.cart" />
@@ -106,6 +106,7 @@ export default {
 <style lang='stylus' scoped>
 main
   position relative
+  top 0
 
 
 

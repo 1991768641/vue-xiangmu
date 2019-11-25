@@ -422,3 +422,10 @@ a {
   height: calc(100% - .384rem);
   padding-bottom: .384rem;
 }
+
+.content-nt .van-tabs__content,.content-nt .van-tabs__content .van-tab__pane,.content-nt .van-tabs__content .van-tab__pane .content{
+  width:100% !important
+}
+.content-nt .van-tabs__content .van-tab__pane .content img{
+  max-width:100% !important
+}

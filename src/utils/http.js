@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs'
 
 export const get=({
     url,
@@ -15,6 +16,7 @@ export const get=({
         return err.message
     })
 }
+
 
 export const get1=({
     url,

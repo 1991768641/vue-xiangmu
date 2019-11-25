@@ -8,10 +8,8 @@ import home from 'pages/index/indexcontent/home/home.vue'
 import vipcard from 'pages/index/vipcard'
 import cart from 'pages/index/cart'
 import my from 'pages/index/my'
-import home0 from 'pages/index/indexcontent/home/other.vue';
-
-import details from 'pages/details/details.vue';
-import test from 'pages/details/test.vue';
+import home0 from 'pages/index/indexcontent/home/other.vue'
+import details from 'pages/details/details.vue'
 import errors from 'pages/404/404.vue'
 
 
@@ -64,14 +62,6 @@ const routes = [
         }
       },
       {
-        path:'cart',
-        name:'cart',
-        component:cart,
-        meta:{
-          index:4
-        }
-      },
-      {
         path:'my',
         name:'my',
         component:my,
@@ -82,14 +72,14 @@ const routes = [
     ]
   },
   {
-    path:'/details',
+    path:'/details/:id',
     name:'details',
     component:details
   },
   {
-    path:'/test',
-    name:'test',
-    component:test
+    path:'/cart',
+    name:'cart',
+    component:cart
   },
   {
     path:'*',

@@ -1,6 +1,6 @@
 <template>
  <div class="gul-list">
-  <div class="gul-item" v-for="list in gullist" :key="list.id">
+  <div class="gul-item" v-for="list in gullist" :key="list.id" :id="list.id" @click="handleclick(list.id)">
     <img :src="list.bigImg"/>
     <div data-v-e4a3ddbc class="goods-name ellipsis">{{list.goodsName}}</div>
     <div data-v-e4a3ddbc class="price-cart flx">
@@ -22,18 +22,25 @@ export default {
   data() {
     return {
         gullist:[],
-        num:1
+        num:1,
+        bscroll:null
     };
   },
   async mounted() {
       this.gulitem()
+      if(this.$route.fullPath=='/index/home/home0'){
+          this.bscroll=new BScroll('.van_tab__pane_nav0',{
+              pullUpLoad: true,
+              probeType :2
+          })
+      }else{
+         this.bscroll=new BScroll('.content-scroll',{
+              pullUpLoad: true,
+              probeType :2
+          })
+      }
 
-      let bscroll=new BScroll('.van_tab__pane_nav0',{
-          pullUpLoad: true,
-          probeType :2
-      })
-
-      bscroll.on('pullingUp',async ()=>{
+      this.bscroll.on('pullingUp',async ()=>{
           this.num++;
           let result=await get({
               url:`/api/goods/list?sorts=hits+asc&pageNo=${this.num}`,
@@ -43,8 +50,8 @@ export default {
               ...result.list
           ]
           await this.$nextTick();
-          bscroll.refresh();
-          bscroll.finishPullUp();
+          this.bscroll.refresh();
+          this.bscroll.finishPullUp();
       })
   },
   methods: {
@@ -53,6 +60,11 @@ export default {
             url:'/api/goods/list?sorts=hits+asc&pageNo=1'
         })
         this.gullist=result.list;
+    },
+    handleclick(id){
+        this.$router.push({
+          path:`/details/${id}`
+        });
     }
   },
 

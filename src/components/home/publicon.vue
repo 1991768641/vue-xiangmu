@@ -1,8 +1,8 @@
 <template>
 
   <div class="recommendfruits-list" :style="publicstyle" v-if="publiclist!=''">
-    <div data-v-4af158f1 class="publicgood" v-for="(list,index) in publiclist" :key="index"  @click="handclick(pubindex)" :bscroll="bscroll">
-      <div data-v-4af158f1 class="goods-img" >
+    <div class="publicgood" v-for="(list,index) in publiclist" :key="index"  @click="handclick(pubindex,list.id,list.goodsName,list.slogan,list.salePrice)" :bscroll="bscroll">
+      <div class="goods-img" >
         <img
           :src="list.goodsImg"
         />
@@ -53,7 +53,8 @@ export default {
         publicimg:'',
         publicstyle:'',
         bscroll:null,
-        newpublic:store.get('publicid')||''
+        newpublic:store.get('publicid')||'',
+        goodsid:''
     };
   },
   
@@ -133,14 +134,16 @@ export default {
       filter(value){
         return "background-image:url('"+value+"')";
       },
-      handclick(activeindex){
+      handclick(activeindex,id,names,slogan,price){
+        
         this.$router.push({
-          path:'/details'
+          path:`/details/${id}`
         });
         let newstore=store.get('active');
-        
         store.set('active',newstore);
         store.set('publicid',this.newpublic);
+        store.set('goodsname',names);
+        store.set('slogan',slogan);
       },
       
   },
