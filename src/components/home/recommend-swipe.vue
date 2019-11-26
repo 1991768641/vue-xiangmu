@@ -5,7 +5,7 @@
       <img :src="list.bseGoodsEo.goodsImg" alt />
       <div class="rem-pro ellipsis">{{list.goodsName}}</div>
       <div class="rem-cart">
-        <div class="rem-pri">￥{{list.mallPrice}}</div>
+        <div class="rem-pri">￥{{(~~list.mallPrice).toFixed(2).toString()}}</div>
         <div class="rem-add">
             <van-icon name="shopping-cart-o" />
         </div>

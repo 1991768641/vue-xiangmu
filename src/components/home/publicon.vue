@@ -15,7 +15,7 @@
         <i class="express">深圳平湖仓</i>
       </div>
       <div class="price-cart flx">
-        <i class="goods-price flx-1">￥{{list.salePrice}}</i>
+        <i class="goods-price flx-1">￥{{(~~list.salePrice).toFixed(2).toString()}}</i>
         <div class="rem-add">
             <van-icon name="shopping-cart-o" />
         </div>

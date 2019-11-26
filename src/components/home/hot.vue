@@ -93,7 +93,7 @@
                 {{list.goodsName}}
               </div>
               <div class="sell-goods-price">
-                ￥{{list.mallPrice}}.00
+                ￥{{(~~list.mallPrice).toFixed(2).toString()}}
               </div>
             </li> 
           </ul>

@@ -42,7 +42,7 @@
 
         <div class="content-bottom">
           <div class="word">
-            <p>{{this.goodsname}}&nbsp;&nbsp;&nbsp;&nbsp;{{this.slogan}}</p>
+            <p>{{goodsname}}&nbsp;&nbsp;&nbsp;&nbsp;{{slogan}}</p>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@
 
       <div class="margin-bottom">
         <div class="column-name">已选</div>
-        <div class="chosen">{{this.goodsStandard}}，1{{this.goodsUnit}}</div>
+        <div class="chosen">{{goodsStandard}}，1{{goodsUnit}}</div>
       </div>
 
       <div class="column">
@@ -79,7 +79,7 @@
 
       <div class="column">
         <div class="column-name">重量</div>
-        <div class="weight">{{this.grossWeight}}/{{this.goodsUnit}}</div>
+        <div class="weight">{{grossWeight}}/{{goodsUnit}}</div>
       </div>
 
       <div class="margin-bottom">
@@ -109,22 +109,22 @@
           <div class="card-view">
             <div>基本信息</div>
             <div>品牌：
-              <i>{{this.goodsBrand}}</i>
+              <i>{{goodsBrand}}</i>
             </div>
             <div>产地：
-              <i>{{this.address}}</i>
+              <i>{{address}}</i>
             </div>
             <div>毛重：
-              <i>{{this.grossWeight}}</i>
+              <i>{{grossWeight}}</i>
             </div>
           </div>
           <div class="card-view">
             <div>包装信息</div>
             <div>包装：
-              <i>{{this.goodsUnit}}</i>
+              <i>{{goodsUnit}}</i>
             </div>
             <div>规格：
-              <i>{{this.goodsStandard}}</i>
+              <i>{{goodsStandard}}</i>
             </div>
           </div>
           <div class="card-view">
@@ -139,10 +139,10 @@
           <div class="card-view">
             <div>存储方式</div>
             <div>存放：
-              <i>{{this.param4}}</i>
+              <i>{{param4}}</i>
             </div>
             <div>
-              <i>{{this.param3}}</i>
+              <i>{{param3}}</i>
             </div>
           </div>
         </van-tab>
@@ -210,11 +210,13 @@ import Vue from 'vue';
 import {get,get1,post} from 'utils/http';
 import BScroll from 'better-scroll';
 import axios from 'axios';
+import _ from 'loadsh';
 import qs from 'qs';
 import {Tab, Tabs, Icon,GoodsAction,GoodsActionIcon,GoodsActionButton,Toast,Swipe, SwipeItem} from 'vant';
 
 Vue.use(Tab).use(Tabs).use(Icon).use(GoodsAction).use(GoodsActionIcon).use(GoodsActionButton).use(Swipe).use(SwipeItem);
 
+import {CARTNUM,ADDGOODS,ADDLIST} from '../../store/modules/action-type'
 export default {
   props:{
     bscroll:Object
@@ -232,19 +234,21 @@ export default {
       selected:'',
       goodsStandard:'',
       price:'',
-      infonum:0,
       goodsUnit:'',
       grossWeight:'',
       param3:'',
       address:'',
       goodsBrand:'',
-      param4:''
+      param4:'',
+      id:'',
+      infonum:0,
+      flag:0
     }
   },
   async mounted() {
     await this.detailsimg();
-    this.goodsname=store.get('goodsname')
-    this.slogan=store.get('slogan')
+    this.id=this.$route.params.id;
+    this.infonum=store.get('cartmessage').length;
     await this.bottomimg();
     await this.selects();
     await this.composite();
@@ -261,16 +265,28 @@ export default {
       this.$router.back()
     },
     onclickcart() {
-      this.$router.push('/cart')
+      this.$router.push('/cart');
+      this.$store.dispatch('cart/'+ADDLIST);
+      this.$forceUpdate(); 
     },
     buycart(){},
     onClickIcon(){},
     addcart(){
-      this.infonum++;
+      let result= store.get('cartmessage');
+      for(var i=0;i<result.length;i++){
+        if(result[i]!=this.id){
+          this.flag++;
+        }
+      }
+      if(this.flag==result.length){
+        this.infonum++;
+      }
       Toast({
         message:'加入购物车成功',
         position:'bottom'
       })
+      this.$store.dispatch('goods/'+ADDGOODS,this.id)
+      this.$store.dispatch('goods/'+CARTNUM)
     },
     onChange(index) {
       this.current = index;
@@ -315,6 +331,8 @@ export default {
       this.address=result.bseGoodsEo.address;
       this.goodsBrand=result.bseGoodsEo.goodsBrand;
       this.param4=result.bseGoodsEo.param4;
+      this.slogan=result.bseGoodsEo.param2;
+      this.goodsname=result.goodsName;
     }
   }
 }

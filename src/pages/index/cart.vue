@@ -15,49 +15,51 @@
       <div class="detail-content">
         <div class="content">
             <div class="vant-list" >
-              <div class="nolist" v-if="cartlist==''">
+              <div class="nolist" v-if="goodslist.length===0">
                 <img src="http://m.egu365.com/img/cart.svg" alt="">
                 <van-button round type="info" size="small" @click="toclick" :plain="true" to="/index">去逛逛</van-button>
               </div>
 
               <div class="item-content" v-else>
-                <van-checkbox name="a" class="item-blk" v-model="checked" checked-color="#e90101">
+                <van-checkbox name="a" class="item-blk" @click="allclick" v-model="all" checked-color="#e90101">
                   自营商品
                 </van-checkbox>
-                <div class="item">
-                  <van-checkbox name="a" class="item-blk2" v-model="checked" checked-color="#e90101"></van-checkbox>
+                <div class="item" v-for="(list,index) in goodslist" :key="list.id">
+                  <van-checkbox name="a" class="item-blk2" v-model="checked[index].flag" @click="checkclick($event,index)" checked-color="#e90101"></van-checkbox>
                   <div class="right">
                     <div class="itemimg">
-                      <img src="http://oss.egu365.com/upload/9adb8fbf8c43433e8538303a3a5b9443.jpg" alt="">
+                      <img :src="list.publishedGoodsEo.bseGoodsEo.goodsImg" alt="">
                     </div>
                     <div class="item-info">
                       <div class="w100">
-                        <div class="item-tl">傻老大原味瓜子216g*6礼盒装</div>
-                        <van-icon name="delete" size="16.8px"/>
+                        <div class="item-tl">{{list.publishedGoodsEo.goodsName}}</div>
+                        <van-icon name="delete" size="16.8px" :title="index" :id="list.id" @click="deleteclick($event,index)"/>
+                        
                       </div>
                       <div class="item-spec">
                         <div class="item-spec">
                           <van-tag round color="rgb(227, 4, 8)" >次日达</van-tag>
-                          <van-tag round color="rgb(204, 204, 204);">1296g</van-tag>
+                          <van-tag round color="rgb(204, 204, 204);">{{list.publishedGoodsEo.bseGoodsEo.goodsStandard}}</van-tag>
                         </div>
                       </div>
                       <div class="item-ps">
-                        <div class="item-price">￥168.00</div>
-                        <van-stepper v-model="value" />
+                        <div class="item-price">￥{{(~~list.publishedGoodsEo.mallPrice).toFixed(2).toString()}}</div>
+                        <van-stepper v-model="list.buyNum"  integer @plus="handleplus(index,list.buyNum,list.goodsId)" @minus="handleminus(index,list.buyNum,list.goodsId)" />
                       </div>
                     </div>
                   </div>
                 </div>
                 
               </div>
+
             </div>
         </div>
         <recommendlike></recommendlike>
       </div>
     </div>
 
-    <van-submit-bar :price="0" button-text="提交订单" @submit="onSubmit">
-      <van-checkbox v-model="checked" checked-color="#e90101">全选</van-checkbox>
+    <van-submit-bar :price="total" button-text="提交订单" @submit="onSubmit">
+      <van-checkbox v-model="all" checked-color="#e90101" @click="allclick">全选</van-checkbox>
     </van-submit-bar>
 
     <van-popup v-model="show">
@@ -68,31 +70,40 @@
 
 <script>
 import Vue from 'vue';
-import { Icon,Button,Checkbox,CheckboxGroup,SubmitBar,Popup,Toast,Tag,Stepper} from 'vant';
+import { Icon,Button,Checkbox,CheckboxGroup,SubmitBar,Popup,Toast,Tag,Stepper,Dialog} from 'vant';
 import BScroll from 'better-scroll';
 import {get,get1} from 'utils/http.js';
 import store from 'store';
+import axios from 'axios';
 import recommendlike from 'components/home/recommend-like.vue';
 
-Vue.use(Icon).use(Button).use(Checkbox).use(CheckboxGroup).use(SubmitBar).use(Popup).use(Toast).use(Tag).use(Stepper);
+Vue.use(Icon).use(Button).use(Checkbox).use(CheckboxGroup).use(SubmitBar).use(Popup).use(Dialog).use(Toast).use(Tag).use(Stepper);
+import {CARTNUM,ADDGOODS,ADDLIST,REMOVEGOODS} from '../../store/modules/action-type'
 
 export default {
   data() {
     return {
         gullist:[],
         num:1,
-        cartlist:['1'],
         result: ['a'],
-        checked:true,
+        checked:[],
         show: false,
-        value: 1
+        value: 1,
+        goodslist:[],
+        cartmessage:[],
+        total:0,
+        all:true,
+        price:[],
+        goodsnum:[]
     };
   },
   components:{
     recommendlike
   },
-  mounted() {
-      this.gulitem()
+ 
+  async mounted() {
+      await this.loadlist();
+      this.gulitem();
       let bscroll=new BScroll('.genre-list',{
           pullUpLoad: true,
           probeType :2,
@@ -135,11 +146,117 @@ export default {
     },
     toclick(){
       store.set("active","");
+    },
+    async loadlist(){
+      let result=await axios.post(
+          '/api/cart/list',
+          `type=5&pageNo=1&memberId=1000011785&memberAccount=1000011785&memberName=EGU1000011785`,
+      ).then((newresult) => {
+          return newresult.data.list
+      })
+      this.goodslist=result;
+      for(var i=0;i<result.length;i++){
+        this.cartmessage.push(result[i].goodsId)
+        this.price.push(result[i].publishedGoodsEo.mallPrice)
+        this.goodsnum.push(result[i].buyNum)
+
+        this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+        let checkeds={
+          id:i,
+          flag:true
+        }
+        this.checked.push(checkeds)
+        
+      }
+      store.set('cartmessage',this.cartmessage);
+    },
+    deleteclick(e,index){
+      Dialog.confirm({
+        title: '删除商品',
+        message: '您确认删除商品吗？',
+        confirmButtonColor:'#abcd05'
+      }).then(async () => {
+        await this.$store.dispatch('goods/'+REMOVEGOODS,e.target.id)
+        
+        for(var i=index+1;i<this.goodslist.length;i++){
+           this.$store.dispatch('goods/'+ADDGOODS,this.goodslist[i].id);
+        }
+        
+        await this.$store.dispatch('goods/'+CARTNUM)
+        await this.$store.dispatch('cart/'+ADDLIST)
+        Toast({
+          message:'修改购物车成功',
+          position:'bottom'
+        })
+        setTimeout(function(){
+          window.location.reload()
+        },200)
+      }).catch(() => {
+      });
+    },
+    checkclick(e,index){
+      this.checked[index].flag=!this.checked[index].flag;
+      if(this.checked[index].flag==false){
+        this.total=this.total-this.price[index]*this.goodsnum[index]*100;
+      }else{
+        this.total=this.total+this.price[index]*this.goodsnum[index]*100;
+      }
+      let sign0=0;
+      let sign1=0;
+      for(var i=0;i<this.checked.length;i++){
+        if(this.checked[i].flag==false){
+          this.all=false
+        }else if(this.checked[i].flag==true){
+          sign1++;
+        }
+      }
+      if(sign1==this.checked.length){
+        this.all=true
+      }
+    },
+    allclick(){
+      this.all=!this.all;
+      if(this.all==false){
+        for(var i=0;i<this.checked.length;i++){
+          this.checked[i].flag=false
+        }
+        this.total=0
+      }else{
+        this.total=0
+        for(var i=0;i<this.checked.length;i++){
+          this.checked[i].flag=true
+          this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+        }
+      }
+    },
+    handleplus(index,num,id){
+      this.goodsnum[index]++;
+      this.$store.dispatch('goods/'+ADDGOODS,id)
+      this.$store.dispatch('goods/'+CARTNUM)
+      if(this.checked[index].flag==true){
+        this.total=0;
+        for(var i=0;i<this.goodslist.length;i++){
+            this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+        }
+      }
+      
+    },
+    handleminus(index,num,id){
+      this.goodsnum[index]--;
+      this.$store.dispatch('goods/'+ADDGOODS,id)
+      this.$store.dispatch('goods/'+CARTNUM)
+      if(this.checked[index].flag==true){
+        this.total=0;
+        for(var i=0;i<this.goodslist.length;i++){
+            this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+        }
+      }
     }
   },
 };
 </script>
 <style lang='stylus' scoped>
+
 
 .van-popup--center
   img 
@@ -163,7 +280,7 @@ export default {
 
 
 .genre-list
-  position relative
+  position absolute
   width 100%
   height 100%
   padding-top .385rem

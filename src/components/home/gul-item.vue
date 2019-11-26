@@ -4,7 +4,7 @@
     <img :src="list.bigImg"/>
     <div data-v-e4a3ddbc class="goods-name ellipsis">{{list.goodsName}}</div>
     <div data-v-e4a3ddbc class="price-cart flx">
-      <i data-v-e4a3ddbc class="goods-price flx-1">￥{{list.salePrice}}</i>
+      <i data-v-e4a3ddbc class="goods-price flx-1">￥{{(~~list.salePrice).toFixed(2).toString()}}</i>
         <div class="rem-add">
             <van-icon name="shopping-cart-o" />
         </div>

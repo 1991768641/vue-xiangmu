@@ -15,6 +15,7 @@ export default new Vuex.Store({
   },
   modules: {
     scroll,
-    goods
+    goods,
+    cart
   }
 })
