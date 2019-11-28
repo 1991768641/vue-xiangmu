@@ -32,6 +32,7 @@
         </van-tabbar-item>
          <van-tabbar-item
           to="/cart"
+          :info="length"
         >
           <span>购物车</span>
           <img slot="icon" slot-scope="props" :src="props.active?icon.cart_light:icon.cart" />
@@ -52,6 +53,7 @@
 <script>
 import Vue from "vue";
 import { Tabbar, TabbarItem,Icon  } from "vant";
+import store from 'store'
 Vue.use(Tabbar).use(TabbarItem).use(Icon);
 
 
@@ -73,6 +75,7 @@ export default {
       activeto:'',
       activeout:'',
       active: 0,
+      length:0,
       icon: 
       {
         home_light,
@@ -99,7 +102,10 @@ export default {
         this.activeout='slideOutLeft';
       }
     }
-  }
+  },
+  mounted() {
+    this.length=store.get('cartmessage').length||0;
+  },
 };
 </script>
 

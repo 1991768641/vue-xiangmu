@@ -23,7 +23,6 @@
       </van-swipe>
 
       <div class="price-name">
-
         <div class="price-top">
           <div class="price-lab-collect">
             <div class="price">{{this.price}}</div>
@@ -242,13 +241,20 @@ export default {
       param4:'',
       id:'',
       infonum:0,
-      flag:0
+      flag:0,
+      d:{},
+      c:{
+        a:{
+          b:'2'
+        }
+      }
     }
   },
   async mounted() {
     await this.detailsimg();
     this.id=this.$route.params.id;
     this.infonum=store.get('cartmessage').length;
+
     await this.bottomimg();
     await this.selects();
     await this.composite();
@@ -262,7 +268,8 @@ export default {
       this.$router.back()
     },
     onclickhome() {
-      this.$router.back()
+      store.set('active','')
+      this.$router.push('/index/home/home0');
     },
     onclickcart() {
       this.$router.push('/cart');
@@ -273,13 +280,19 @@ export default {
     onClickIcon(){},
     addcart(){
       let result= store.get('cartmessage');
-      for(var i=0;i<result.length;i++){
-        if(result[i]!=this.id){
-          this.flag++;
+      if(result.length!=0){
+        for(var i=0;i<result.length;i++){
+          if(result[i]!=this.id){
+            this.flag++;
+          }
         }
-      }
-      if(this.flag==result.length){
-        this.infonum++;
+        if(this.flag==result.length){
+          this.infonum++;
+          result.push(this.id);
+          store.set('cartmessage',result);
+        }
+      }else{
+        this.infonum=1;
       }
       Toast({
         message:'加入购物车成功',
@@ -312,18 +325,17 @@ export default {
       for(var i=0;i<this.selected.length;i++){
           if(this.selected[i].id==this.$route.params.id){
             this.goodsStandard=this.selected[i].goodsStandard
-           
           }
       }
     },
     async composite(){
-
       let result=await axios.post(
         '/api/goods/publish',
         `id=${this.$route.params.id}&memberId=1000011785&memberAccount=1000011785&memberName=EGU1000011785`,
       ).then((result) => {
         return result.data.obj
       })
+
       this.price=(~~result.mallPrice).toFixed(2);
       this.goodsUnit=result.bseGoodsEo.goodsUnit;
       this.grossWeight=result.bseGoodsEo.grossWeight;

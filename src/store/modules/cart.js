@@ -8,7 +8,6 @@ const mutations={
     [SETLIST](state, data) {
         state.all=data;
         store.set('goods',state.all);
-
     }
 }
 const actions={

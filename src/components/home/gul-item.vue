@@ -31,12 +31,14 @@ export default {
       if(this.$route.fullPath=='/index/home/home0'){
           this.bscroll=new BScroll('.van_tab__pane_nav0',{
               pullUpLoad: true,
-              probeType :2
+              probeType :2,
+              click:true
           })
       }else{
          this.bscroll=new BScroll('.content-scroll',{
               pullUpLoad: true,
-              probeType :2
+              probeType :2,
+              click:true
           })
       }
 

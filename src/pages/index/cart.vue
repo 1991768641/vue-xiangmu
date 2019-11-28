@@ -21,12 +21,12 @@
               </div>
 
               <div class="item-content" v-else>
-                <van-checkbox name="a" class="item-blk" @click="allclick" v-model="all" checked-color="#e90101">
+                <van-checkbox name="a" class="item-blk" v-model="all" @click="allclick"  label-disabled checked-color="#e90101">
                   自营商品
                 </van-checkbox>
-                <div class="item" v-for="(list,index) in goodslist" :key="list.id">
-                  <van-checkbox name="a" class="item-blk2" v-model="checked[index].flag" @click="checkclick($event,index)" checked-color="#e90101"></van-checkbox>
-                  <div class="right">
+                <div class="item" v-for="(list,index) in goodslist" :key="list.id" >
+                  <van-checkbox :name="index" class="item-blk2" v-model="checked[index].flag" @change="checkhandleclick($event,index)" checked-color="#e90101"></van-checkbox>
+                  <div class="right" >
                     <div class="itemimg">
                       <img :src="list.publishedGoodsEo.bseGoodsEo.goodsImg" alt="">
                     </div>
@@ -34,7 +34,6 @@
                       <div class="w100">
                         <div class="item-tl">{{list.publishedGoodsEo.goodsName}}</div>
                         <van-icon name="delete" size="16.8px" :title="index" :id="list.id" @click="deleteclick($event,index)"/>
-                        
                       </div>
                       <div class="item-spec">
                         <div class="item-spec">
@@ -44,7 +43,7 @@
                       </div>
                       <div class="item-ps">
                         <div class="item-price">￥{{(~~list.publishedGoodsEo.mallPrice).toFixed(2).toString()}}</div>
-                        <van-stepper v-model="list.buyNum"  integer @plus="handleplus(index,list.buyNum,list.goodsId)" @minus="handleminus(index,list.buyNum,list.goodsId)" />
+                        <van-stepper v-model="list.buyNum"  integer @plus="handleplus(index,list.buyNum,list.goodsId)" min="1" @minus="handleminus(index,list.buyNum,list.goodsId)" @focus="handleblur(index,list.buyNum,list.goodsId)" @change="handlechange(index,list.buyNum,list.goodsId)"/>
                       </div>
                     </div>
                   </div>
@@ -58,7 +57,7 @@
       </div>
     </div>
 
-    <van-submit-bar :price="total" button-text="提交订单" @submit="onSubmit">
+    <van-submit-bar :price="total" button-text="提交订单" @submit="onSubmit" >
       <van-checkbox v-model="all" checked-color="#e90101" @click="allclick">全选</van-checkbox>
     </van-submit-bar>
 
@@ -78,14 +77,13 @@ import axios from 'axios';
 import recommendlike from 'components/home/recommend-like.vue';
 
 Vue.use(Icon).use(Button).use(Checkbox).use(CheckboxGroup).use(SubmitBar).use(Popup).use(Dialog).use(Toast).use(Tag).use(Stepper);
-import {CARTNUM,ADDGOODS,ADDLIST,REMOVEGOODS} from '../../store/modules/action-type'
+import {CARTNUM,ADDGOODS,ADDLIST,REMOVEGOODS,MINUS} from '../../store/modules/action-type'
 
 export default {
   data() {
     return {
         gullist:[],
         num:1,
-        result: ['a'],
         checked:[],
         show: false,
         value: 1,
@@ -94,7 +92,8 @@ export default {
         total:0,
         all:true,
         price:[],
-        goodsnum:[]
+        goodsnum:[],
+        handlemeth:false
     };
   },
   components:{
@@ -138,11 +137,15 @@ export default {
       this.$router.push('/index')
     },
     onSubmit(){
-      this.show=true
-      Toast({
-        message:'没买东西点啥啊你！',
-        position:'bottom'
-      });
+      if(this.goodslist.length==0){
+        Toast({
+          message:'没买东西点啥啊你！',
+          position:'bottom'
+        });
+        this.show=false
+      }else{
+        this.show=true
+      }
     },
     toclick(){
       store.set("active","");
@@ -159,14 +162,12 @@ export default {
         this.cartmessage.push(result[i].goodsId)
         this.price.push(result[i].publishedGoodsEo.mallPrice)
         this.goodsnum.push(result[i].buyNum)
-
-        this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+        this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;
+        
         let checkeds={
-          id:i,
           flag:true
         }
         this.checked.push(checkeds)
-        
       }
       store.set('cartmessage',this.cartmessage);
     },
@@ -190,33 +191,33 @@ export default {
         })
         setTimeout(function(){
           window.location.reload()
-        },200)
+        },300)
       }).catch(() => {
       });
     },
-    checkclick(e,index){
-      this.checked[index].flag=!this.checked[index].flag;
+    checkhandleclick(e,index){
+      let sign=0;
       if(this.checked[index].flag==false){
-        this.total=this.total-this.price[index]*this.goodsnum[index]*100;
+        this.all=false;    
       }else{
-        this.total=this.total+this.price[index]*this.goodsnum[index]*100;
-      }
-      let sign0=0;
-      let sign1=0;
-      for(var i=0;i<this.checked.length;i++){
-        if(this.checked[i].flag==false){
-          this.all=false
-        }else if(this.checked[i].flag==true){
-          sign1++;
+        for(var i=0;i<this.checked.length;i++){
+          if(this.checked[i].flag==true){
+            sign++;
+          }
         }
-      }
-      if(sign1==this.checked.length){
-        this.all=true
+        if(sign==this.checked.length){
+          this.all=true
+        }
+      } 
+      this.total=0;
+      for(var i=0;i<this.goodslist.length;i++){
+        if(this.checked[i].flag==true){
+          this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;   
+        }
       }
     },
     allclick(){
-      this.all=!this.all;
-      if(this.all==false){
+      if(this.all==true){
         for(var i=0;i<this.checked.length;i++){
           this.checked[i].flag=false
         }
@@ -225,31 +226,56 @@ export default {
         this.total=0
         for(var i=0;i<this.checked.length;i++){
           this.checked[i].flag=true
-          this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+          this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;
         }
       }
     },
     handleplus(index,num,id){
       this.goodsnum[index]++;
-      this.$store.dispatch('goods/'+ADDGOODS,id)
+      num++;
+      this.$store.dispatch('goods/'+MINUS,{id,num})
       this.$store.dispatch('goods/'+CARTNUM)
       if(this.checked[index].flag==true){
         this.total=0;
         for(var i=0;i<this.goodslist.length;i++){
-            this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+            if(this.checked[i].flag==true){
+              this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;
+            }
         }
       }
-      
     },
     handleminus(index,num,id){
       this.goodsnum[index]--;
-      this.$store.dispatch('goods/'+ADDGOODS,id)
+      num--;
+      this.$store.dispatch('goods/'+MINUS,{id,num})
       this.$store.dispatch('goods/'+CARTNUM)
+      this.$store.dispatch('cart/'+ADDLIST)
       if(this.checked[index].flag==true){
         this.total=0;
         for(var i=0;i<this.goodslist.length;i++){
-            this.total=this.total+this.price[i]*this.goodsnum[i]*100;
+            if(this.checked[i].flag==true){
+              this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;
+            }
         }
+      }
+    },
+    handlechange(index,num,id){
+      this.goodsnum[index]=num;
+      this.$store.dispatch('goods/'+MINUS,{id,num})
+      this.$store.dispatch('goods/'+CARTNUM)
+      this.$store.dispatch('cart/'+ADDLIST)
+      if(this.checked[index].flag==true){
+        this.total=0;
+        for(var i=0;i<this.goodslist.length;i++){
+            if(this.checked[i].flag==true){
+              this.total=this.total+(~~this.price[i]).toFixed(2)*this.goodsnum[i]*100;
+            }
+        }
+      }
+    },
+    handlefocus(index,num,id){
+      if(num<=0||''){
+        num=1
       }
     }
   },
@@ -283,11 +309,13 @@ export default {
   position absolute
   width 100%
   height 100%
+  max-width 7.8rem
   padding-top .385rem
+  overflow hidden
 
-  top 0
   .nav-t
     width 100%
+    max-width 7.8rem
     height .385rem
     position fixed
     z-index 100
@@ -401,14 +429,5 @@ export default {
             .item-price
               color #f00200
               font-size .152rem
-
-            
-
-
-        
-
-
-        
-
 
 </style>

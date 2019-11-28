@@ -1,4 +1,4 @@
-import {SETGOODS,ADDGOODS,SETCART,CARTNUM,REMOVEGOODS,SETREMOVEGOODS} from './action-type.js';
+import {SETGOODS,ADDGOODS,SETCART,CARTNUM,REMOVEGOODS,SETREMOVEGOODS,MINUS} from './action-type.js';
 import store from 'store';
 import axios from 'axios';
 import _ from 'loadsh';
@@ -32,7 +32,13 @@ const actions = {
           commit(SETGOODS,result)
         })
     },
-    
+    [MINUS]({commit},data){
+        axios.post(
+            '/api/cart/add',
+            `goodsId=${data.id}&buyNum=${data.num}&reckon=true&cartType=5&memberId=1000011785&memberAccount=1000011785&memberName=EGU1000011785`,
+        ).then((result) => {
+        })
+    },
     
     [CARTNUM]({commit}){
         axios.post(
@@ -47,7 +53,6 @@ const actions = {
             '/api/cart/remove',
             `id=${id}&memberId=1000011785&memberAccount=1000011785&memberName=EGU1000011785`,
         ).then((result) => {
-            
           commit(SETREMOVEGOODS,result)
         })
     }

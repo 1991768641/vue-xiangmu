@@ -38,7 +38,7 @@
           <img src="http://m.egu365.com/img/notice_bg.jpg" alt="">
           <van-icon name="volume-o" color="#f44"/>
           <van-swipe vertical class="hotswip" :show-indicators="false" :autoplay="3000" >
-            <van-swipe-item v-for="(list,index) in namelist" :key="index">
+            <van-swipe-item v-for="(list,index) in namelist"  :key="index">
               {{list.name}}
             </van-swipe-item>
           </van-swipe>
@@ -193,6 +193,9 @@ export default {
         url:'/api/news/adviseAll?id=95&pageSize=4'
       })
       this.selllist=result.bcPublishedGoodsEos
+    },
+    swipeclick(){
+      console.log(0)
     }
   },
 }

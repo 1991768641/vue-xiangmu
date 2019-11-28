@@ -54,12 +54,7 @@ export default {
 };
 </script>
 <style lang='stylus' scoped>
-// @import '~assets/othercss/chunk-03f8b8c8.css';
-// @import '~assets/othercss/chunk-5bd3b402.css';
-// @import '~assets/othercss/chunk-aad3c5e0.css';
-// @import '~assets/othercss/chunk-vendors.css';
-// @import '~assets/othercss/common.css';
-// @import '~assets/othercss/iconfont.css';
+
 .recommendlist
     width 100%
     .recommend-lump

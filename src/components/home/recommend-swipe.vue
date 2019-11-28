@@ -1,7 +1,7 @@
 
 <template>
   <div class="recomswipe">
-    <div class="recomitem" v-for="(list,index) in recommendlist" :key="index">
+    <div class="recomitem" v-for="(list,index) in recommendlist" @click="handleclick(list.goodsId)" :key="index">
       <img :src="list.bseGoodsEo.goodsImg" alt />
       <div class="rem-pro ellipsis">{{list.goodsName}}</div>
       <div class="rem-cart">
@@ -36,6 +36,9 @@ export default {
             url:`/api/news/adviseGoods?seat=`+this.ids.toString()
         })
         this.recommendlist=result.list
+    },
+    handleclick(id){
+        this.$router.push({path:`/details/${id}`})
     }
 
   }
