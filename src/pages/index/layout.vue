@@ -53,9 +53,10 @@
 <script>
 import Vue from "vue";
 import { Tabbar, TabbarItem,Icon  } from "vant";
-import store from 'store'
+import store from 'store';
+import axios from 'axios';
 Vue.use(Tabbar).use(TabbarItem).use(Icon);
-
+import {ADDLIST} from '../../store/modules/action-type'
 
 import home from 'assets/images/home.png'
 import home_light from 'assets/images/home_light.png'
@@ -104,7 +105,16 @@ export default {
     }
   },
   mounted() {
-    this.length=store.get('cartmessage').length||0;
+    this.findlength()
+  },
+  methods: {
+    async findlength(){
+      let result=await axios.post(
+          '/api/cart/list',
+          `type=5&pageNo=1&memberId=1000011785&memberAccount=1000011785&memberName=EGU1000011785`,
+      )
+      this.length=(result.data.list.length).toString()
+    }
   },
 };
 </script>

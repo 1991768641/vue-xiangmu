@@ -34,6 +34,12 @@ export default {
               probeType :2,
               click:true
           })
+      }else if(this.$route.fullPath=='/index/my'){
+          this.bscroll=new BScroll('.my-box',{
+              pullUpLoad: true,
+              probeType :2,
+              click:true
+          })
       }else{
          this.bscroll=new BScroll('.content-scroll',{
               pullUpLoad: true,

@@ -3,7 +3,7 @@
 
       <div class="hotswiper">
         <van-swipe :autoplay="5000" indicator-color="#abcd05">
-          <van-swipe-item v-for="(list, index) in imglist" :key="index" :to="list.link">
+          <van-swipe-item v-for="(list, index) in imglist"  @touchstart="handlestart" @touchmove="handlemove" @touchend="handleend"  :key="index" :to="list.link">
             <img :src="list.img"/>
           </van-swipe-item>
         </van-swipe>
@@ -38,7 +38,7 @@
           <img src="http://m.egu365.com/img/notice_bg.jpg" alt="">
           <van-icon name="volume-o" color="#f44"/>
           <van-swipe vertical class="hotswip" :show-indicators="false" :autoplay="3000" >
-            <van-swipe-item v-for="(list,index) in namelist"  :key="index">
+            <van-swipe-item v-for="(list,index) in namelist" :key="index">
               {{list.name}}
             </van-swipe-item>
           </van-swipe>
@@ -127,7 +127,8 @@ export default {
       namelist:[],
       lucklist:[],
       earlylist:[],
-      selllist:[]
+      selllist:[],
+      flag:false
     }
   },
   components:{
@@ -195,7 +196,18 @@ export default {
       this.selllist=result.bcPublishedGoodsEos
     },
     swipeclick(){
-      console.log(0)
+      // console.log(0)
+    },
+    handlestart(){
+      this.flag=false
+    },
+    handlemove(){
+      this.flag=true
+    },
+    handleend(){
+      if(this.flag==false){
+        // this.$router.push('/cart')
+      }
     }
   },
 }
