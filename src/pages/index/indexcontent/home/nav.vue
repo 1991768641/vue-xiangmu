@@ -5,7 +5,7 @@
             <div class="homeinput">
               <div class="home_interior">
                 <van-icon name="search" color='#666'/>
-                <input type="text" placeholder="红颜草莓">
+                <input type="text" placeholder="红颜草莓" @click="searchclick">
               </div>
             </div>
           </div>
@@ -63,6 +63,9 @@ export default {
      this.$router.push('/index/home/home0');
      store.set('active',index.toString());
      store.set('publicid',this.titleid);
+    },
+    searchclick(){
+      this.$router.push('/search');
     }
   }
 }

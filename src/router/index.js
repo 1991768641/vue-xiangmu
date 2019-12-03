@@ -11,6 +11,8 @@ import my from 'pages/index/my'
 import home0 from 'pages/index/indexcontent/home/other.vue'
 import details from 'pages/details/details.vue'
 import errors from 'pages/404/404.vue'
+import search from 'pages/index/search/search.vue'
+import searchlist from 'pages/index/search/searchlist.vue'
 
 
 Vue.use(VueRouter)
@@ -35,12 +37,18 @@ const routes = [
         path:'home',
         name:'home',
         component:home,
+        meta:{
+          index:1
+        },
         redirect:'/index/home/home0',
         children:[
           {
             path:'home0',
             name:'home0',
-            component:home0
+            component:home0,
+            meta:{
+              index:1
+            },
           }
          
         ]
@@ -80,6 +88,16 @@ const routes = [
     path:'/cart',
     name:'cart',
     component:cart
+  },
+  {
+    path:'/search',
+    name:'search',
+    component:search
+  },
+  {
+    path:'/searchlist/:word',
+    name:'searchlist',
+    component:searchlist
   },
   {
     path:'*',

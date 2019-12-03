@@ -1,13 +1,30 @@
 <template>
-
-  <section id="city-list" class="city-list-container" style="display: block;">
-    <div id="locate" class="city-title">定位城市</div>
+   
+    <section id="city-list" class="city-list-container" style="display: block;">
+    <van-index-bar :index-list="indexList" highlight-color="#323233">
+    <van-index-anchor index="定位">定位城市</van-index-anchor>
+    <div id="locate" class="city-title"></div>
     <div class="city-list city-list-inline clearfix">
       <div class="location-city">定位失败，请点击重试</div>
     </div>
 
+    <van-index-anchor index="最近">最近访问</van-index-anchor>
+    <div class="city-list city-list-inline clearfix">
+      <div class="city-item" data-nm="广州" data-id="20">
+        广州
+      </div>
+      <div class="city-item" data-nm="北京" data-id="1">
+        北京
+      </div>
+      <div class="city-item" data-nm="西安" data-id="42">
+        西安
+      </div> 
+    </div>
+
+
+    <van-index-anchor index="热门">热门城市</van-index-anchor>
     <section>
-      <div id="hot" class="city-title">热门城市</div>
+      <div id="hot" class="city-title"></div>
       <div class="city-list city-list-inline clearfix">
         <div class="city-item" data-nm="上海" data-id="10">上海</div>
         <div class="city-item" data-nm="北京" data-id="1">北京</div>
@@ -22,15 +39,12 @@
         <div class="city-item" data-nm="重庆" data-id="45">重庆</div>
       </div>
     </section>
-
-    <van-index-bar :index-list="indexList">
-      <van-index-anchor index="1">标题1</van-index-anchor>
-      <van-cell title="文本" />
-
-    </van-index-bar>
-
-    
-  </section>
+      <div v-for="(item,indexed) in cityslist2" :key="item+indexed" >
+      <van-index-anchor :index="indexed">{{indexed}}</van-index-anchor>
+      <van-cell :title="list.nm"  v-for="(list,index2) in item" :key="list+index2"/>
+      </div>
+  </van-index-bar>
+    </section>
   
 </template>
 
@@ -48,9 +62,10 @@ export default {
       indexList: [
         '定位',
         '最近',
-        '热门',
-        'A'
-      ]
+        '热门'
+      ],
+      cityslist1:[],
+      cityslist2:[]
 
     };
   },
@@ -62,7 +77,14 @@ export default {
       let result=_.groupBy(city.cts,(value)=>{
         return value.py.substr(0,1).toUpperCase()
       })
-      console.log(result)
+      this.cityslist1=Object.keys(result).sort()
+      this.indexList=this.indexList.concat(this.cityslist1)
+
+      let reducedResult = this.cityslist1.reduce((obj, key) => {
+        obj[key] = result[key]
+        return obj
+      }, {})
+      this.cityslist2 = reducedResult
     }
   },
 };
