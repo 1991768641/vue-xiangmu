@@ -253,8 +253,12 @@ export default {
   async mounted() {
     await this.detailsimg();
     this.id=this.$route.params.id;
-    this.infonum=store.get('cartmessage').length;
-
+    if(store.get('cartmessage')){
+      this.infonum=store.get('cartmessage').length;
+      // store.set('cartmessage',this.$route.params.id);
+    }else{
+      this.infonum=0;
+    }
     await this.bottomimg();
     await this.selects();
     await this.composite();
@@ -280,7 +284,8 @@ export default {
     onClickIcon(){},
     addcart(){
       let result= store.get('cartmessage');
-      if(result.length!=0){
+      this.flag=0;
+      if(result){
         for(var i=0;i<result.length;i++){
           if(result[i]!=this.id){
             this.flag++;
@@ -651,6 +656,4 @@ export default {
     font-size 14px
     line-height normal
     border 0
-
-
 </style>
